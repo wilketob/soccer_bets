@@ -1,7 +1,17 @@
 import re
 from urllib import request
+import json
 
 url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'
+config_file="settings.json"
+
+def sql_connect(config_file):
+    with open(config_file) as f:
+        config_data = json.load(f)
+        db_server = config_data["db_server"]
+        db_name = config_data["db_name"]
+        db_user = config_data["db_user"]
+        db_pass = config_data["db_pass"]
 
 def data_crosstable(url_crosstable):
     url_requested = request.urlopen(url_crosstable)
