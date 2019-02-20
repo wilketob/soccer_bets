@@ -27,12 +27,12 @@ def score_results():
     return re_search_chunk
 
 def main():
-    score_results()
+    re_search_chunk = score_results()
     print(re_search_chunk.sort())
-    #print(type(re_search_chunk))
+    print(type(re_search_chunk))
     set_search_chunk = set(re_search_chunk)
     for a in set_search_chunk:
-        print(a.strip('>').strip('<') + ' = ' + str(re_search_chunk.count(e)))
+        print(a.strip('>').strip('<') + ' = ' + str(re_search_chunk.count(a)))
 
 if __name__ == '__main__':
     main()
