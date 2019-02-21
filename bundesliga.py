@@ -2,7 +2,7 @@ import re
 from urllib import request
 import json
 import mysql.connector #https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
-
+import sshtunnel #https://stackoverflow.com/questions/21903411/enable-python-to-connect-to-mysql-via-ssh-tunnelling
 
 url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'
 config_file="settings.json"
@@ -14,21 +14,46 @@ def sql_login(config_file):
         db_name = config_data["db_name"]
         db_user = config_data["db_user"]
         db_pass = config_data["db_pass"]
-        return db_server, db_name, db_user, db_pass
+        db_access = config_data["db_access"]
+        return db_server, db_name, db_user, db_pass, db_access
 
 def sql_connect():
-    db_server, db_name, db_user, db_pass = sql_login(config_file)
+    db_server, db_name, db_user, db_pass, db_access = sql_login(config_file)
     print(db_server)
-    try:
-        db_connection = mysql.connector.connect(user=db_user,password=db_pass,host=db_server,database=db_name) #EIne Alternative ist die **Option
-        return db_connection
-    except mysql.connector.Error as err:
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Something is wrong with your user name or password")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Database does not exist")
-        else:
-            print(err)
+    if db_access == "ssh":
+        try:
+            with sshtunnel.SSHTunnelForwarder(
+                    ('xxxxxxxxxxxxx', 22),
+                    ssh_username='xxxxx',
+                    ssh_password='xxx',
+                    remote_bind_address=('127.0.0.3', 3306),
+                    local_bind_address=('127.0.0.1',3306)
+            ) as tunnel:
+                print("Kurz vor dem Aufruf der db_connection")
+                print('INhalt von tunnel: ' + str(tunnel))
+                db_connection = mysql.connector.connect(
+                    user=db_user,
+                    password=db_pass,
+                    host='127.0.0.1',
+                    database=db_name,
+                    port=tunnel.local_bind_port)
+                print("DB COnnection: " + db_connection)
+                return db_connection
+
+
+   # try:
+    #    db_connection = mysql.connector.connect(user=db_user,password=db_pass,host=db_server,database=db_name) #EIne Alternative ist die **Option
+     #   return db_connection
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Something is wrong with your user name or password")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Database does not exist")
+            else:
+                print(err)
+    else:
+        return(0)
+
 #close the connection in your referenced function
 
 def sql_query(ean):
@@ -38,12 +63,14 @@ def sql_query(ean):
     query = (f"""SELECT average_price, storage_location_stock FROM plenty_stock 
              WHERE ean IS {ean}""") #Triple quotation marks for multi line strings
 
+    print('Query wird ausgeührt')
     cursor.execute(query)
 
     for c in cursor:
         print(c)
 
     db_connection.close()
+    print('DB Connect wird geclosed')
 
 
 def data_crosstable(url_crosstable):
