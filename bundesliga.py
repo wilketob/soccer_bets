@@ -42,17 +42,18 @@ def sql_connect(query):
                     #cursor = db_connection.cursor()
                     print('[+] Query wird ausgeührt: ' + query)
                     cur.execute(query)
+                    try:
+                        cur.commit()
+                    except Exception as e:
+                        pass
                     cursor_data = cur.fetchall()
-                    #print('[+] Ergebnis Query: ' + cursor_data)
-                    #for e in cursor_data:
-                       # print(e)
-
                 except Exception as e:
                     print(e)
                 db_connection.close()
                 print('[+] db connection closed')
+                return cursor_data
 
-            return cursor_data
+            # return cursor_data
 
         except Exception as err:
             print(err)
@@ -65,7 +66,11 @@ def sql_query(ean):
     query = (f"""SELECT average_price, storage_location_stock FROM plenty_stock 
              WHERE ean LIKE '{ean}'""") #Triple quotation marks for multi line strings
 
-    cursor_result = sql_connect(query)
+    query1 =("SELECT bl1_leaguetables.season,bl1_results.weekday "
+            "FROM bl1_leaguetables,bl1_results "
+            "WHERE bl1_leaguetables.team = bl1_results.teamhome;")
+
+    cursor_result = sql_connect(query1)
 
     for c in cursor_result:
         print('[+] Result of query: ' + str(c))
