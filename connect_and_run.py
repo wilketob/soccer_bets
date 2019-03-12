@@ -1,12 +1,9 @@
-import re
-from urllib import request
 import json
 #from mysql.connector import MySQLConnection, Error #https://dev.mysql.com/doc/connector-python/en/connector-python-example-connecting.html
 import pymysql
 import sshtunnel #https://stackoverflow.com/questions/21903411/enable-python-to-connect-to-mysql-via-ssh-tunnelling
+from urllib import request
 
-url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'
-#https://www.fussballdaten.de/bundesliga/1964/kreuztabelle/
 config_file="settings.json"
 
 def sql_login(config_file):
@@ -18,6 +15,13 @@ def ssh_login(config_file):
     with open(config_file) as f:
         config_data_ssh = json.load(f)["ssh_server"]
         return config_data_ssh
+
+def data_crosstable(url_crosstable):
+    url_requested = request.urlopen(url_crosstable)
+    html_content = str(url_requested.read().decode('utf-8'))
+    return html_content
+    #print(url_requested.code)
+    #print(html_content)
 
 def sql_query(ean):
     #Routine for testing the sl_connect routine
@@ -33,6 +37,7 @@ def sql_query(ean):
 
     for c in cursor_result:
         print('[+] Result of query: ' + str(c))
+
 
 def sql_connect(query,query_type,results_for_db):
     config_data_sql = sql_login(config_file)
@@ -84,33 +89,3 @@ def sql_connect(query,query_type,results_for_db):
             print(err)
     else:
         print("Define the routine if no SSH connection is mandatory")
-
-def data_crosstable(url_crosstable):
-    url_requested = request.urlopen(url_crosstable)
-    html_content = str(url_requested.read().decode('utf-8'))
-    return html_content
-    #print(url_requested.code)
-    #print(html_content)
-
-
-def score_results():
-    re_search_chunk = []
-    re_search_chunk = re.findall('>[0-9]:[0-9]<', data_crosstable(url_crosstable))
-        return re_search_chunk
-
-def main():
-    re_search_chunk = score_results()
-    print(re_search_chunk.sort())
-    print(type(re_search_chunk))
-    set_search_chunk = set(re_search_chunk)
-    for a in set_search_chunk:
-        print(a.strip('>').strip('<') + ' = ' + str(re_search_chunk.count(a)))
-
-if __name__ == '__main__':
-    main()
-
-#URL für Tabellenstände an einem bestimmten Spieltag: https://www.fussballdaten.de/bundesliga/tabelle/1977/2/  (Jahr 2018 = Saison 2016/2017 // 2 = Spieltag)
-# URL für Spielergebnisse an einem bestimmten Tag mit Angabe des Tages https://www.fussballdaten.de/bundesliga/2017/4/
-
-#Query what
-#

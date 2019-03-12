@@ -1,4 +1,4 @@
-from connect_and_run import data_crosstable
+from connect_and_run import sql_connect
 
 def bl_initial_data():
     start_year = 2017
