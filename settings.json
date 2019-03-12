@@ -1,6 +1,19 @@
 {
-	"db_server": "XXXXXXXX",
-	"db_name": "XXXXXXX",
-	"db_user": "XXXXXX",
-	"db_pass": "XXXXX"
+  "sql_server": {
+    "user": "the user id for database server",
+    "password": "yor password for db user",
+    "host": "hostname oor ip oof DB server",
+    "database": "name of database"
+  },
+  "ssh_server": {
+    "db_access": "when you connect via SSH to DB server type ssh, else leave blank",
+    "ssh_host": "SSH hostname or IP",
+    "ssh_port": "port if ssh connection",
+    "ssh_user": "user to authenticate to ssh",
+    "ssh_pass": "password",
+    "remote_bind_address": "IP host address target",
+    "remote_bind_port": "port of sql connection tarhet",
+    "local_bind_address": "IP host address source",
+    "local_bind_port": "port of sql connection source"
+    }
 }
