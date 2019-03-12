@@ -1,0 +1,13 @@
+Projekt Daten von Sportschau.de
+Haupturl: https://www.sportschau.de/fussball/
+Check for daily technicals: https://www.sportschau.de/fussball/bundesliga/spieltag/index.html
+grep daily technicals: re.findall('<form action="/fussball/(.*?)>',html))
+result grep: bundesliga/spieltag/ergebnisse104~_eam-afd59763702fd0fda162b61172f4275f.jsp"
+
+grep daily identifier: re.findall('<input name="eap" type="hidden" value="(.*?)" />',html)
+result daily identifier: 8oI34N4hym4RDV6dhKK0OnLYM/NzIoiKmKv2HkJYKgPxCIifwJGZmigVNLw42zmko7u1BzkuenhteE/SifHaWb+D5g3qtsFGsnGotmb1PcZSS6XXfYWnKf1ELW46g2DdlZjLnzmQERqcVaI8z38Zqg==
+ URL AUFBAU:
+
+ https://www.sportschau.de/fussball/bundesliga/spieltag/ergebnisse104~_eam-afd59763702fd0fda162b61172f4275f.jsp?_spieltag=1-12&_sportart=fb&_liga=BL1&_saison=2019&eap=8oI34N4hym4RDV6dhKK0OnLYM%2FNzIoiKmKv2HkJYKgPxCIifwJGZmigVNLw42zmko7u1BzkuenhteE%2FSifHaWb%2BD5g3qtsFGsnGotmb1PcZSS6XXfYWnKf1ELW46g2DdlZjLnzmQERqcVaI8z38Zqg%3D%3D
+
+Hupturl + result daily technicals + ?_spieltag=1-12&_sportart=fb& _liga=BL1&_saison=2019&eap= +result daily identifier

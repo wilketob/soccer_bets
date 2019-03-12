@@ -6,6 +6,7 @@ import pymysql
 import sshtunnel #https://stackoverflow.com/questions/21903411/enable-python-to-connect-to-mysql-via-ssh-tunnelling
 
 url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'
+#https://www.fussballdaten.de/bundesliga/1964/kreuztabelle/
 config_file="settings.json"
 
 def sql_login(config_file):
@@ -18,7 +19,22 @@ def ssh_login(config_file):
         config_data_ssh = json.load(f)["ssh_server"]
         return config_data_ssh
 
-def sql_connect(query):
+def sql_query(ean):
+    #Routine for testing the sl_connect routine
+    results_for_db = [] #placeholder for multi values
+    query = (f"""SELECT average_price, storage_location_stock FROM plenty_stock
+             WHERE ean LIKE '{ean}'""") #Triple quotation marks for multi line strings
+
+    query1 =("SELECT bl1_leaguetables.season,bl1_results.weekday "
+            "FROM bl1_leaguetables,bl1_results "
+            "WHERE bl1_leaguetables.team = bl1_results.teamhome;")
+
+    cursor_result = sql_connect(query1,"SELECT",results_for_db)
+
+    for c in cursor_result:
+        print('[+] Result of query: ' + str(c))
+
+def sql_connect(query,query_type,results_for_db):
     config_data_sql = sql_login(config_file)
     config_data_ssh = ssh_login(config_file)
     print('[+] Connect to DB server: ' + config_data_sql["host"])
@@ -40,46 +56,38 @@ def sql_connect(query):
                 try:
                     cur = db_connection.cursor()
                     #cursor = db_connection.cursor()
-                    print('[+] Query wird ausgeührt: ' + query)
-                    cur.execute(query)
-                    try:
-                        cur.commit()
-                    except Exception as e:
-                        pass
-                    cursor_data = cur.fetchall()
+                    if len(results_for_db) > 1:
+                        print('[+] Query Many wird ausgeührt: ' + query)
+                        cur.executemany(query,results_for_db)
+                        if (query_type == "ALTER") or (query_type == "INSERT"):
+                            try:
+                                print('[+] Execute Commit')
+                                db_connection.commit()
+                            except Exception as e:
+                                cursor_data = e
+                        cursor_data = cur.fetchall()
+                    else:
+                        cur.execute(query)
+                        if (query_type == "ALTER") or (query_type == "INSERT"):
+                            try:
+                                cur.commit()
+                                cursor_data = cur.fetchall()
+                            except Exception as e:
+                                cursor_data = e
+                        cursor_data = cur.fetchall()
                 except Exception as e:
                     print(e)
                 db_connection.close()
                 print('[+] db connection closed')
                 return cursor_data
-
-            # return cursor_data
-
         except Exception as err:
             print(err)
     else:
-        return(0)
-
-#close the connection in your referenced function
-
-def sql_query(ean):
-    query = (f"""SELECT average_price, storage_location_stock FROM plenty_stock 
-             WHERE ean LIKE '{ean}'""") #Triple quotation marks for multi line strings
-
-    query1 =("SELECT bl1_leaguetables.season,bl1_results.weekday "
-            "FROM bl1_leaguetables,bl1_results "
-            "WHERE bl1_leaguetables.team = bl1_results.teamhome;")
-
-    cursor_result = sql_connect(query1)
-
-    for c in cursor_result:
-        print('[+] Result of query: ' + str(c))
-
-
+        print("Define the routine if no SSH connection is mandatory")
 
 def data_crosstable(url_crosstable):
     url_requested = request.urlopen(url_crosstable)
-    html_content = str(url_requested.read())
+    html_content = str(url_requested.read().decode('utf-8'))
     return html_content
     #print(url_requested.code)
     #print(html_content)
@@ -88,7 +96,7 @@ def data_crosstable(url_crosstable):
 def score_results():
     re_search_chunk = []
     re_search_chunk = re.findall('>[0-9]:[0-9]<', data_crosstable(url_crosstable))
-    return re_search_chunk
+        return re_search_chunk
 
 def main():
     re_search_chunk = score_results()
@@ -105,3 +113,4 @@ if __name__ == '__main__':
 # URL für Spielergebnisse an einem bestimmten Tag mit Angabe des Tages https://www.fussballdaten.de/bundesliga/2017/4/
 
 #Query what
+#
