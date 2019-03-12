@@ -11,3 +11,16 @@ result daily identifier: 8oI34N4hym4RDV6dhKK0OnLYM/NzIoiKmKv2HkJYKgPxCIifwJGZmig
  https://www.sportschau.de/fussball/bundesliga/spieltag/ergebnisse104~_eam-afd59763702fd0fda162b61172f4275f.jsp?_spieltag=1-12&_sportart=fb&_liga=BL1&_saison=2019&eap=8oI34N4hym4RDV6dhKK0OnLYM%2FNzIoiKmKv2HkJYKgPxCIifwJGZmigVNLw42zmko7u1BzkuenhteE%2FSifHaWb%2BD5g3qtsFGsnGotmb1PcZSS6XXfYWnKf1ELW46g2DdlZjLnzmQERqcVaI8z38Zqg%3D%3D
 
 Hupturl + result daily technicals + ?_spieltag=1-12&_sportart=fb& _liga=BL1&_saison=2019&eap= +result daily identifier
+
+
+
+Files:
+connect and query   - connection to server   and running the query
+
+iniital  (or setup) creating the tables
+
+historical - get all historical data from previous matches
+
+worker --get all current match results
+
+statistical - do all the calculating stuff
