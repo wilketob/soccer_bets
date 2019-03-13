@@ -1,6 +1,27 @@
 from connect_and_run import sql_connect
 
-def bl_initial_data():
+#get_year ask for the current year for use as placeholder in url request for kreuztabelle
+def get_year():
+    yy = datetime.now().year
+    wd = datetime.now().strftime("%A")
+    #a hat das Format 01.01.1990 15:30 (aus der Kreuztabelle) und wird mit strptime in das datetime format umgewaldelt
+    #aus demm man denn mit strftime alle einzelenn Dtaen ziehen kann wie z:b: %A = Wochentag
+    wd2 = datetime.strptime("09.01.1978 15:00","%d.%m.%Y %H:%M").strftime('%A')
+    if datetime.now().month <= 6:
+        return yy
+    else:
+        return yy + 1
+
+
+ininitial results & tables
+ask for liga []Bundesliga BL1
+                []1. Bundesliga BL2
+
+check if table exist table_resultsBL1
+    --> Ininital setup already done please go to daily worker
+if tbale not exist create table and run initial results for selected ligues
+
+def get_initial_data():
     start_year = 2017
     end_year = get_year()  + 1
     results_for_db = []

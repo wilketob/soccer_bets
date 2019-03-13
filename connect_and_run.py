@@ -4,7 +4,12 @@ import pymysql
 import sshtunnel #https://stackoverflow.com/questions/21903411/enable-python-to-connect-to-mysql-via-ssh-tunnelling
 from urllib import request
 
-config_file="settings.json"
+def get_html_content(url):
+    url_requested = request.urlopen(url)
+    html_content = str(url_requested.read().decode('utf-8'))
+    return html_content
+    #print(url_requested.code)
+    #print(html_content)
 
 def sql_login(config_file):
     with open(config_file) as f:
@@ -16,30 +21,8 @@ def ssh_login(config_file):
         config_data_ssh = json.load(f)["ssh_server"]
         return config_data_ssh
 
-def data_crosstable(url_crosstable):
-    url_requested = request.urlopen(url_crosstable)
-    html_content = str(url_requested.read().decode('utf-8'))
-    return html_content
-    #print(url_requested.code)
-    #print(html_content)
-
-def sql_query(ean):
-    #Routine for testing the sl_connect routine
-    results_for_db = [] #placeholder for multi values
-    query = (f"""SELECT average_price, storage_location_stock FROM plenty_stock
-             WHERE ean LIKE '{ean}'""") #Triple quotation marks for multi line strings
-
-    query1 =("SELECT bl1_leaguetables.season,bl1_results.weekday "
-            "FROM bl1_leaguetables,bl1_results "
-            "WHERE bl1_leaguetables.team = bl1_results.teamhome;")
-
-    cursor_result = sql_connect(query1,"SELECT",results_for_db)
-
-    for c in cursor_result:
-        print('[+] Result of query: ' + str(c))
-
-
 def sql_connect(query,query_type,results_for_db):
+    config_file="settings.json"
     config_data_sql = sql_login(config_file)
     config_data_ssh = ssh_login(config_file)
     print('[+] Connect to DB server: ' + config_data_sql["host"])
@@ -89,3 +72,18 @@ def sql_connect(query,query_type,results_for_db):
             print(err)
     else:
         print("Define the routine if no SSH connection is mandatory")
+
+def sql_query(ean):
+    #Routine for testing the sl_connect routine
+    results_for_db = [] #placeholder for multi values
+    query = (f"""SELECT average_price, storage_location_stock FROM plenty_stock
+             WHERE ean LIKE '{ean}'""") #Triple quotation marks for multi line strings
+
+    query1 =("SELECT bl1_leaguetables.season,bl1_results.weekday "
+            "FROM bl1_leaguetables,bl1_results "
+            "WHERE bl1_leaguetables.team = bl1_results.teamhome;")
+
+    cursor_result = sql_connect(query1,"SELECT",results_for_db)
+
+    for c in cursor_result:
+        print('[+] Result of query: ' + str(c))

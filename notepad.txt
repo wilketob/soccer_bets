@@ -24,3 +24,5 @@ historical - get all historical data from previous matches
 worker --get all current match results
 
 statistical - do all the calculating stuff
+
+setup - will ask for  League and run the initial process

@@ -1,14 +1,18 @@
 import re
-from connect_and_run import data_crosstable
+from connect_and_run import get_html_content
 from connect_and_run import sql_connect
 
 
-#https://www.fussballdaten.de/bundesliga/1964/kreuztabelle/
+def build_daily_link():
+    url_data = "https://www.sportschau.de/fussball/bundesliga/spieltag/index.html"
+    jsp_url = re.findall('<form action="/fussball/(.*?)"',get_html_content(url_data))
+    eap_url = re.findall('<input name="eap" type="hidden" value="(.*?)" />',get_html_content(url_data))
+    return jsp_url, eap_url
 
 def score_results():
     url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'
     re_search_chunk = []
-    re_search_chunk = re.findall('>[0-9]:[0-9]<', data_crosstable(url_crosstable))
+    re_search_chunk = re.findall('>[0-9]:[0-9]<', get_html_content(url_crosstable))
     return re_search_chunk
 
 def main():

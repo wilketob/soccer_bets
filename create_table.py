@@ -3,26 +3,33 @@ from connect_and_run import sql_connect
 from datetime import datetime
 import re
 
-def create_initial_table():
-    query = ("CREATE TABLE IF NOT EXISTS bl1_setup (setup_date DATE) ENGINE = InnoDB") #Alternativ use the `` instead of ' or "
+def create_table_setup():
+    query = ("CREATE TABLE IF NOT EXISTS db_setup ("
+    "setup_date DATE,"
+    "table_name VARCHAR(20))"
+    " ENGINE = InnoDB") #Alternativ use the `` instead of ' or "
+    query_type = query[0:query.find(" ",0)]
     try:
-        cursor_data = sql_connect(query)
+        cursor_data = sql_connect(query,query_type,'')
         print(cursor_data)
     except Exception as e:
         print(e)
 
-def create_table_teamsBL1():
-    query = ("CREATE TABLE IF NOT EXISTS bl1_teams (teamid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (teamid) ,"
+def create_table_teams(league):
+    query = (f"CREATE TABLE IF NOT EXISTS {league}_teams ("
+    "teamid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (teamid) ,"
     "team VARCHAR(6),"
     "team_name VARCHAR(30)) ENGINE = InnoDB;")
+    query_type = query[0:query.find(" ",0)]
     try:
-        cursor_data = sql_connect(query)
+        cursor_data = sql_connect(query,query_type,'')
         print(cursor_data)
     except Exception as e:
         print(e)
 
-def create_table_resultsBL1():
-    query = ("CREATE TABLE IF NOT EXISTS bl1_results (resultid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (resultid),"
+def create_table_results(league):
+    query = (f"CREATE TABLE IF NOT EXISTS {league}_results ("
+    "resultid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (resultid),"
     "season VARCHAR(9),"
     "matchweek INT NOT NULL,"
     "date VARCHAR (10),"
@@ -31,14 +38,16 @@ def create_table_resultsBL1():
     "teamguest VARCHAR (30),"
     "scorehome INT,"
     "scoreguest INT) ENGINE = InnoDB;")
+    query_type = query[0:query.find(" ",0)]
     try:
-        cursor_data = sql_connect(query,"CREATE",'')
+        cursor_data = sql_connect(query,query_type,'')
         print(cursor_data)
     except Exception as e:
         print(e)
 
-def create_table_leaguetablesBL1():
-    query = ("CREATE TABLE IF NOT EXISTS bl1_leaguetables (leaguetablesid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (leaguetablesid),"
+def create_table_leaguetables(league):
+    query = (f"CREATE TABLE IF NOT EXISTS {league}_leaguetables ("
+    "leaguetablesid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (leaguetablesid),"
     "season VARCHAR(9),"
     "date DATE,"
     "matchweek INT,"
@@ -52,19 +61,7 @@ def create_table_leaguetablesBL1():
     "goalsagainst INT,"
     "goalsdiff INT) ENGINE = InnoDB;")
     try:
-        cursor_data = sql_connect(query)
+        cursor_data = sql_connect(query,"CREATE",'')
         print(cursor_data)
     except Exception as e:
         print(e)
-
-#get_year ask for the current year for use as placeholder in url request for kreuztabelle
-def get_year():
-    yy = datetime.now().year
-    wd = datetime.now().strftime("%A")
-    #a hat das Format 01.01.1990 15:30 (aus der Kreuztabelle) und wird mit strptime in das datetime format umgewaldelt
-    #aus demm man denn mit strftime alle einzelenn Dtaen ziehen kann wie z:b: %A = Wochentag
-    wd2 = datetime.strptime("09.01.1978 15:00","%d.%m.%Y %H:%M").strftime('%A')
-    if datetime.now().month <= 6:
-        return yy
-    else:
-        return yy + 1
