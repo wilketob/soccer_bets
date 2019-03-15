@@ -15,7 +15,7 @@ def score_results():
     re_search_chunk = re.findall('>[0-9]:[0-9]<', get_html_content(url_crosstable))
     return re_search_chunk
 
-def main():
+def main(): #noch als Testfunktion für RE und requesst
     re_search_chunk = score_results()
     print(re_search_chunk.sort())
     print(type(re_search_chunk))

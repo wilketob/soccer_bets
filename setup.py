@@ -17,7 +17,7 @@ def main():
             print('Buenos dias, Don')
             break
     #Create the tables (if not exist)
-    create_table_setup()
+    create_table_setup(league)
     create_table_results(league)
     create_table_leaguetables(league)
 
