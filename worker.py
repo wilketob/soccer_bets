@@ -1,13 +1,14 @@
 import re
 from connect_and_run import get_html_content
 from connect_and_run import sql_connect
+from urllib.parse import quote_plus
 
 
 def build_daily_link():
     url_data = "https://www.sportschau.de/fussball/bundesliga/spieltag/index.html"
     jsp_url = re.findall('<form action="/fussball/(.*?)"',get_html_content(url_data))
     eap_url = re.findall('<input name="eap" type="hidden" value="(.*?)" />',get_html_content(url_data))
-    return jsp_url, eap_url
+    return jsp_url[0], quote_plus(eap_url[0])
 
 def score_results():
     url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'

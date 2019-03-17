@@ -4,6 +4,7 @@ import pymysql
 import sshtunnel #https://stackoverflow.com/questions/21903411/enable-python-to-connect-to-mysql-via-ssh-tunnelling
 from urllib import request
 
+
 def get_html_content(url):
     url_requested = request.urlopen(url)
     html_content = str(url_requested.read().decode('utf-8'))

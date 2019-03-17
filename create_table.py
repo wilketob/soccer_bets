@@ -3,7 +3,7 @@ from connect_and_run import sql_connect
 from datetime import datetime
 import re
 
-def create_table_setup():
+def create_table_setup(league):
     query = ("CREATE TABLE IF NOT EXISTS db_setup ("
     "setup_date DATE,"
     "table_name VARCHAR(20))"

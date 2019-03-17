@@ -1,7 +1,8 @@
-import sys
 import os
 import time
 from create_table import *
+from initial_data import get_initial_data
+
 
 def main():
     for i in range(0,3):
@@ -20,6 +21,11 @@ def main():
     create_table_setup(league)
     create_table_results(league)
     create_table_leaguetables(league)
+
+    #Run the initial Scrape of the leagues
+    get_initial_data(league)
+
+
 
 
 if __name__ == '__main__':
