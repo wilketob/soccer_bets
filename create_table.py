@@ -51,7 +51,7 @@ def create_table_leaguetables(league):
     "season VARCHAR(9),"
     "date DATE,"
     "matchweek INT,"
-    "team VARCHAR(4),"
+    "team VARCHAR(30),"
     "rank INT,"
     "points INT,"
     "won INT,"
@@ -59,7 +59,7 @@ def create_table_leaguetables(league):
     "drawn INT,"
     "goalsfor INT,"
     "goalsagainst INT,"
-    "goalsdiff INT) ENGINE = InnoDB;")
+    "goalsdiff VARCHAR(5)) ENGINE = InnoDB;")
     try:
         cursor_data = sql_connect(query,"CREATE",'')
         print(cursor_data)
