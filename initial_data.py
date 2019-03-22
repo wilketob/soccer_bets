@@ -21,9 +21,9 @@ def get_initial_data(league):
     base_url = 'https://www.sportschau.de/fussball/bundesliga/spieltag/index.html'
     html_data = get_html_content(base_url)
     #html: <option value="1964">1963/1964</option>
-    all_years = re.findall('option .*? value="([0-9]{4})">',html_data)
+    #all_years = re.findall('option .*? value="([0-9]{4})">',html_data)
     #TESTCASE:
-    #all_years = [1964,1965]
+    all_years = [1967]
     start_year = all_years[0]
     end_year = all_years[-1]
     data_for_table_results = []
@@ -67,27 +67,29 @@ def get_initial_data(league):
                         scorehome = re.findall('Endstand: </span>([0-9]{1,2}):<',match[0])[0]
                         scoreguest = re.findall('zu </span>([0-9]{1,2})<',match[0])[0]
                         data_for_table_results.append((every_year,matchweek,date,weekday,teamhome,teamguest,scorehome,scoreguest))
+
                     #: whats about the league tables, you can grab it from same Website
                     # without parsing the site a 2nd time
                 for team_rank in res_table:
                     if (len(re.findall('>(\d{1,2})</',str(team_rank))) > 1):
-                        date = ''
-                        matchweek = re.findall('>(\d{1,2})</',str(team_rank[1]))
-                        team = re.findall('title="Logo (.*?)"',team_rank[0])
-                        rank = re.findall('>(\d{1,2})</',str(team_rank[0]))
-                        points = re.findall('>(\d{1,2})</',str(team_rank[5]))
-                        won  = re.findall('>(\d{1,2})</',str(team_rank[2]))
-                        lost = re.findall('>(\d{1,2})</',str(team_rank[4]))
-                        drawn = re.findall('>(\d{1,2})</',str(team_rank[3]))
-                        goalsfor = ''
-                        goalsagainst =''
-                        goalsdiff =''
-                        data_for_table_leaguetables.append(every_year,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff)
+                        #get the latest match day as date for table
+                        #date = re.findall('\d\d\.\d\d\.\d\d\d\d',match[0])[0]
+                        matchweek = re.findall('>(\d{1,2})</',team_rank[0])[1]
+                        team = re.findall('spvVerein_[0-9]{1,9}_[0-9]{1,9}">(.*?)<',team_rank[0].replace('<strong>',''))[0]
+                        rank = re.findall('>(\d{1,2})</',team_rank[0])[0]
+                        points = re.findall('>(\d{1,2})</',team_rank[0])[5]
+                        won  = re.findall('>(\d{1,2})</',team_rank[0])[2]
+                        lost = re.findall('>(\d{1,2})</',team_rank[0])[4]
+                        drawn = re.findall('>(\d{1,2})</',team_rank[0])[3]
+                        goalsfor = re.findall('spvTorverhaeltnis_[0-9]{1,9}_[0-9]{1,9}">(.*?):',team_rank[0])[0]
+                        goalsagainst = re.findall('spvTorverhaeltnis_[0-9]{1,9}_[0-9]{1,9}">[0-9]{1,3}:(.*?)<',team_rank[0])[0]
+                        goalsdiff = re.findall('spvTordifferenz_[0-9]{1,9}_[0-9]{1,9}">(.*?)<',team_rank[0])[0]
+                        data_for_table_leaguetables.append((every_year,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff))
 
     print("[+++]Result of Website scrape: " + str(data_for_table_results))
     query =(f"INSERT INTO {league}_results (season,matchweek, date, weekday, teamhome, teamguest, scorehome, scoreguest) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)")
     query_type = query[0:query.find(" ",0)] #check if INSERT OR SELECT OR ALTER
-    query2 = (f"INSERT INTO {league}_leaguetables (every_year,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    query2 = (f"INSERT INTO {league}_leaguetables (season,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
     query_type2 = query2[0:query.find(" ",0)] #check if INSERT OR SELECT OR ALTER
     try:
         cursor_data = sql_connect(query,query_type,data_for_table_results) #
