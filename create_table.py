@@ -49,7 +49,7 @@ def create_table_leaguetables(league):
     query = (f"CREATE TABLE IF NOT EXISTS {league}_leaguetables ("
     "leaguetablesid INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (leaguetablesid),"
     "season VARCHAR(9),"
-    "date DATE,"
+    "date VARCHAR (10),"
     "matchweek INT,"
     "team VARCHAR(30),"
     "rank INT,"

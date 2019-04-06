@@ -57,13 +57,14 @@ def get_initial_data(league):
 
                 for match in res_search_html:
                     print('[INHALT VON MATCH:] '+ str(match))
-                    matchweek = re.findall('-([0-9]{1,2})',match[0])[0]
-                    date = re.findall('\d\d\.\d\d\.\d\d\d\d',match[0])[0]
-                    weekday = datetime.strptime(date,"%d.%m.%Y").strftime("%A")
-                    teamhome = re.findall('scope="row">(.*?) <',match[0])[0]
-                    teamguest = re.findall('gegen</span>: (.*?)<',match[0])[0]
+
                     # in current seasons score can be blank, use if to avooid exception
-                    if re.findall('Endstand: </span>([0-9]{1,2}):<',match[0])[0]:
+                    if len(re.findall('Endstand: </span>([0-9]{1,2}):<',match[0])) > 0:
+                        matchweek = re.findall('-([0-9]{1,2})',match[0])[0]
+                        date = re.findall('\d\d\.\d\d\.\d\d\d\d',match[0])[0]
+                        weekday = datetime.strptime(date,"%d.%m.%Y").strftime("%A")
+                        teamhome = re.findall('scope="row">(.*?) <',match[0])[0]
+                        teamguest = re.findall('gegen</span>: (.*?)<',match[0])[0]
                         scorehome = re.findall('Endstand: </span>([0-9]{1,2}):<',match[0])[0]
                         scoreguest = re.findall('zu </span>([0-9]{1,2})<',match[0])[0]
                         data_for_table_results.append((every_year,matchweek,date,weekday,teamhome,teamguest,scorehome,scoreguest))
