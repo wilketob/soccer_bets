@@ -34,8 +34,8 @@ def create_table_results(league):
     "matchweek INT NOT NULL,"
     "date VARCHAR (10),"
     "weekday VARCHAR(10),"
-    "teamhome VARCHAR (30),"
-    "teamguest VARCHAR (30),"
+    "teamhome VARCHAR (40),"
+    "teamguest VARCHAR (40),"
     "scorehome INT,"
     "scoreguest INT) ENGINE = InnoDB;")
     query_type = query[0:query.find(" ",0)]

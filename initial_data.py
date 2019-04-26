@@ -22,8 +22,8 @@ def get_initial_data(league):
     html_data = get_html_content(base_url)
     #html: <option value="1964">1963/1964</option>
     #all_years = re.findall('option .*? value="([0-9]{4})">',html_data)
-    #TESTCASE:
-    all_years = [1967]
+    #TESTCASE - uncomment if you want only a special year:
+    all_years = [2019]
     start_year = all_years[0]
     end_year = all_years[-1]
     data_for_table_results = []
@@ -41,7 +41,7 @@ def get_initial_data(league):
         first_matchday = all_matchdays[0]
         last_matchday = all_matchdays[-1]
 
-        for single_matchday in all_matchdays    :
+        for single_matchday in all_matchdays:
                 print('Ergebnisse des ' + str(single_matchday) + '. Spieltags')
                 url_data_matchday = 'https://www.sportschau.de/fussball/' + str(jsp_url) + '?_spieltag=' +str(single_matchday) + '&_sportart=fb&_liga=' + str(league) + '&_saison=' + str(every_year) + '&eap=' + str(eap_url)
                 print('[++ URL ++] ' + str(url_data_matchday))
@@ -60,13 +60,13 @@ def get_initial_data(league):
 
                     # in current seasons score can be blank, use if to avooid exception
                     if len(re.findall('Endstand: </span>([0-9]{1,2}):<',match[0])) > 0:
-                        matchweek = re.findall('-([0-9]{1,2})',match[0])[0]
+                        matchweek = re.findall('-([0-9]{1,2})',single_matchday)[0]
                         date = re.findall('\d\d\.\d\d\.\d\d\d\d',match[0])[0]
                         weekday = datetime.strptime(date,"%d.%m.%Y").strftime("%A")
                         teamhome = re.findall('scope="row">(.*?) <',match[0])[0]
                         teamguest = re.findall('gegen</span>: (.*?)<',match[0])[0]
                         scorehome = re.findall('Endstand: </span>([0-9]{1,2}):<',match[0])[0]
-                        scoreguest = re.findall('zu </span>([0-9]{1,2})<',match[0])[0]
+                        scoreguest = re.findall('zu </span>([0-9]{1,2})',match[0])[0]
                         data_for_table_results.append((every_year,matchweek,date,weekday,teamhome,teamguest,scorehome,scoreguest))
 
                     #: whats about the league tables, you can grab it from same Website
@@ -86,18 +86,18 @@ def get_initial_data(league):
                         goalsagainst = re.findall('spvTorverhaeltnis_[0-9]{1,9}_[0-9]{1,9}">[0-9]{1,3}:(.*?)<',team_rank[0])[0]
                         goalsdiff = re.findall('spvTordifferenz_[0-9]{1,9}_[0-9]{1,9}">(.*?)<',team_rank[0])[0]
                         data_for_table_leaguetables.append((every_year,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff))
-
-    print("[+++]Result of Website scrape: " + str(data_for_table_results))
-    query =(f"INSERT INTO {league}_results (season,matchweek, date, weekday, teamhome, teamguest, scorehome, scoreguest) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)")
-    query_type = query[0:query.find(" ",0)] #check if INSERT OR SELECT OR ALTER
-    query2 = (f"INSERT INTO {league}_leaguetables (season,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-    query_type2 = query2[0:query.find(" ",0)] #check if INSERT OR SELECT OR ALTER
-    try:
-        cursor_data = sql_connect(query,query_type,data_for_table_results) #
-        print(cursor_data)
-        cursor_data = sql_connect(query2,query_type2,data_for_table_leaguetables)
-    except Exception as e:
-        print(e)
+        #
+        print("[+++]Result of Website scrape: " + str(data_for_table_results))
+        query =(f"INSERT INTO {league}_results (season,matchweek, date, weekday, teamhome, teamguest, scorehome, scoreguest) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)")
+        query_type = query[0:query.find(" ",0)] #check if INSERT OR SELECT OR ALTER
+        query2 = (f"INSERT INTO {league}_leaguetables (season,date,matchweek,team,rank,points,won,lost,drawn,goalsfor,goalsagainst,goalsdiff) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+        query_type2 = query2[0:query.find(" ",0)] #check if INSERT OR SELECT OR ALTER
+        try:
+            cursor_data = sql_connect(query,query_type,data_for_table_results) #
+            print(cursor_data)
+            cursor_data = sql_connect(query2,query_type2,data_for_table_leaguetables)
+        except Exception as e:
+            print(e)
 
 
 
@@ -130,6 +130,20 @@ def get_initial_data(league):
 #
 #
 #ToDo
+#
+#SELECT COUNT( matchweek )
+#FROM  `BL1_results`
+#WHERE  `matchweek` =30
+#
+#
+#change the writing to DB from end of all to end of each year
+#make a entry at db_setup which year which league you scraped successful
+#in case of restart the setup check what years we already have and start from there
+#If a year will be written set league and year
+#running setup check what year and leagues exist
+#
+# Try to work out the exceptions more detailed and
+#
 #Initial: get all the reults of the all matches
 #check how we can set a marker what matchdayy is last to hook up for upcoming mmmatches
 #get all the results  of table rankings
@@ -138,7 +152,7 @@ def get_initial_data(league):
 #
 #setup a web frontend (Django or try React / bootstrap)
 #
-#remove the print statementss
+#remove the print statementss - there is a status bar for it :-) https://getpocket.com/a/read/2527334297
 #comment the code
 #build the readme.md
 #
