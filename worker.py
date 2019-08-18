@@ -1,28 +1,43 @@
 import re
 from connect_and_run import get_html_content
 from connect_and_run import sql_connect
-from urllib.parse import quote_plus
+from connect_and_run import build_daily_link
+from connect_and_run import get_last_row
+from connect_and_run import count_matchweeks
+from connect_and_run import build_url
+from initial_data import scrape_years
 
 
-def build_daily_link():
-    url_data = "https://www.sportschau.de/fussball/bundesliga/spieltag/index.html"
-    jsp_url = re.findall('<form action="/fussball/(.*?)"',get_html_content(url_data))
-    eap_url = re.findall('<input name="eap" type="hidden" value="(.*?)" />',get_html_content(url_data))
-    return jsp_url[0], quote_plus(eap_url[0])
+def get_weekly_results(league):
+    matchweek = get_last_row('matchweek',league)[0][0]
+    season = get_last_row('season',league)[0][0]
+    print('### START DEBUG ###')
+    print(f'season: {season}')
+    print(f'matchweek: {matchweek}')
+    print('Type count_matchweeks', count_matchweeks(league, matchweek, season)[0][0])
+    print('### END DEBUG ###')
+    if (count_matchweeks(league, matchweek, season)[0][0] < 8): # change the '8' to half of qty teams
+        print('Running IF')
+        url_data = build_url(matchweek,league,season)
+        html_data = get_html_content(url_data)
+        print(url_data)
 
-def score_results():
-    url_crosstable = 'https://www.fussballdaten.de/bundesliga/kreuztabelle/'
-    re_search_chunk = []
-    re_search_chunk = re.findall('>[0-9]:[0-9]<', get_html_content(url_crosstable))
-    return re_search_chunk
+    #read day from sportschau and compare what matches are not in db
+    elif (matchweek == 34):
+        print('Running ELIF')
+        print(f'matchweek: {matchweek}')
+        print(f'season {season} Typ: {type(season)}')
+        season = [int(season) + 1]
+        print(f'season {season} Typ: {type(season)}')
+        matchweek = 1
+        scrape_years(league,season)
+        
+    else:
+        print('Nothing')
 
-def main(): #noch als Testfunktion für RE und requesst
-    re_search_chunk = score_results()
-    print(re_search_chunk.sort())
-    print(type(re_search_chunk))
-    set_search_chunk = set(re_search_chunk)
-    for a in set_search_chunk:
-        print(a.strip('>').strip('<') + ' = ' + str(re_search_chunk.count(a)))
+def main():
+    get_weekly_results('BL1')
+
 
 if __name__ == '__main__':
     main()

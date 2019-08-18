@@ -52,7 +52,7 @@ def create_table_leaguetables(league):
     "date VARCHAR (10),"
     "matchweek INT,"
     "team VARCHAR(30),"
-    "rank INT,"
+    "league_rank INT,"
     "points INT,"
     "won INT,"
     "lost INT,"
@@ -60,8 +60,9 @@ def create_table_leaguetables(league):
     "goalsfor INT,"
     "goalsagainst INT,"
     "goalsdiff VARCHAR(5)) ENGINE = InnoDB;")
+    query_type = query[0:query.find(" ",0)]
     try:
-        cursor_data = sql_connect(query,"CREATE",'')
+        cursor_data = sql_connect(query,query_type,'')
         print(cursor_data)
     except Exception as e:
         print(e)

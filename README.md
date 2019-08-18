@@ -1,5 +1,5 @@
 # soccer_bets
-Become #1 at kicktipp with analyzing historical soccer data from bundesliga and try to predict the next matches
+Become #1 at kicktipp with analyzing historical soccer data from bundesliga and try to forecast the next matches
 
 This software is written in python
 
@@ -16,4 +16,4 @@ Get all results from Bundesliga (1st division) and store it to a database.
 Run twice a week (Monday 10pm and Wednesday10pm) and collect new results
 logic: for every upcoming game make a forecast based on earlier games and results:
 	how were the results based on the same teams, same places in game table, same game days, same win/lose scores, same goal scores
-	find a balance of the logic above to make the forecast a precise as possible ;-) 
+	find a balance of the logic above to make the forecast a precise as possible ;-)
